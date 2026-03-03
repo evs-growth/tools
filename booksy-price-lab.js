@@ -4,7 +4,7 @@ class BooksyPriceLab extends HTMLElement {
     this.attachShadow({ mode: "open" });
   }
 
-  async connectedCallback() {
+  connectedCallback() {
     const shadow = this.shadowRoot;
 
     shadow.innerHTML = `
@@ -12,66 +12,55 @@ class BooksyPriceLab extends HTMLElement {
         :host {
           all: initial;
           display: block;
-          font-family: 'Poppins', sans-serif;
+          font-family: sans-serif;
         }
         #root {
-          min-height: 100vh;
+          min-height: 300px;
+          padding: 40px;
+          background: #f8fafc;
         }
       </style>
       <div id="root"></div>
     `;
 
-    await this.loadScript("https://cdn.tailwindcss.com");
-    await this.loadScript("https://unpkg.com/react@18/umd/react.production.min.js");
-    await this.loadScript("https://unpkg.com/react-dom@18/umd/react-dom.production.min.js");
-
-    const appScript = document.createElement("script");
-    appScript.textContent = `
-      const { useState } = React;
-
-      function App() {
-        const [count, setCount] = useState(0);
-
-        return React.createElement(
-          "div",
-          { className: "min-h-screen bg-slate-50 text-slate-800 p-10" },
-          React.createElement(
-            "h1",
-            { className: "text-4xl font-black mb-6" },
-            "Booksy Nail Price Lab"
-          ),
-          React.createElement(
-            "p",
-            { className: "mb-6 text-teal-600 font-bold" },
-            "Shadow DOM isolated embed – production safe."
-          ),
-          React.createElement(
-            "button",
-            {
-              className: "bg-teal-600 text-white px-6 py-3 rounded-xl font-bold",
-              onClick: () => setCount(count + 1)
-            },
-            "Clicks: " + count
-          )
-        );
-      }
-
-      const root = ReactDOM.createRoot(
-        document.getElementById("root")
-      );
-      root.render(React.createElement(App));
-    `;
-
-    shadow.appendChild(appScript);
+    this.mountApp();
   }
 
-  loadScript(src) {
-    return new Promise(resolve => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.onload = resolve;
-      this.shadowRoot.appendChild(s);
-    });
+  mountApp() {
+    const mountNode = this.shadowRoot.getElementById("root");
+
+    const App = () => {
+      const [count, setCount] = React.useState(0);
+
+      return React.createElement(
+        "div",
+        { className: "wrapper" },
+        React.createElement(
+          "h1",
+          { style: { fontSize: "28px", fontWeight: "800", marginBottom: "20px" } },
+          "Booksy Nail Price Lab"
+        ),
+        React.createElement(
+          "button",
+          {
+            onClick: () => setCount(count + 1),
+            style: {
+              padding: "12px 20px",
+              background: "#0BA3AD",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              fontWeight: "700",
+              cursor: "pointer"
+            }
+          },
+          "Clicks: " + count
+        )
+      );
+    };
+
+    const root = ReactDOM.createRoot(mountNode);
+    root.render(React.createElement(App));
   }
 }
 
