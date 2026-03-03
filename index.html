@@ -918,6 +918,22 @@ root.render(<App />);
 </script>
 </html>
 
+<script>
+    function sendHeight() {
+        const height = document.documentElement.scrollHeight;
+        window.parent.postMessage({ 'setHeight': height }, '*');
+    }
+
+    // Check height on load
+    window.onload = sendHeight;
+    // Check height whenever the window is resized
+    window.onresize = sendHeight;
+    // Check height whenever the user clicks (tabs changing, accordion opening)
+    window.onclick = sendHeight;
+
+    // Optional: Continuous check every second just in case
+    setInterval(sendHeight, 1000);
+</script>
 
 
 
