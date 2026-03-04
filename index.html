@@ -171,6 +171,30 @@ const [isAddedFeedback, setIsAddedFeedback] = useState(false);
    
 const [businessName, setBusinessName] = useState(savedData.businessName || 'My Beauty Lab');
 const [weeklyHours, setWeeklyHours] = useState(savedData.weeklyHours || 24);
+   // --- ADD THIS TO SYNC HEIGHT WITH YOUR WEBSITE ---
+useEffect(() => {
+  const sendHeight = () => {
+    // We target the root div or documentElement to get the full height
+    const height = document.documentElement.scrollHeight;
+    window.parent.postMessage({ 'type': 'iframe-resize', 'height': height }, "*");
+  };
+
+  // Create an observer to watch for any UI changes (tab swaps, new rows, etc.)
+  const observer = new ResizeObserver(() => {
+    sendHeight();
+  });
+
+  // Start observing the body for height changes
+  observer.observe(document.body);
+
+  // Send initial height
+  sendHeight();
+
+  // Cleanup on unmount
+  return () => observer.disconnect();
+}, [activeTab, tools, fixedExpenses, inventory, savedServicesList, showProductPicker]); 
+// The array above ensures it fires whenever your data or tabs change
+// --------------------------------------------------
 const [desiredHourlyWage, setDesiredHourlyWage] = useState(savedData.desiredHourlyWage || 10);
    
 const [tools, setTools] = useState(savedData.tools || [
@@ -887,3 +911,4 @@ root.render(<App />);
 </script>
 </body>
 </html>
+
