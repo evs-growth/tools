@@ -423,8 +423,8 @@ const NextTabButton = ({ target, label = "Next Step" }) => (
 <button
 onClick={() => {
 setActiveTab(target);
-// Scroll to the top of the tab container so users see the new section clearly
-document.getElementById('tab-top-anchor')?.scrollIntoView({ behavior: 'smooth' });
+// This scrolls to the absolute 0,0 coordinate of the page
+window.scrollTo({ top: 0, behavior: 'smooth' });
 }}
 className="bg-brand-main text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl hover:bg-brand-black transition-all transform active:scale-95 flex items-center gap-3 group"
 >
@@ -898,6 +898,7 @@ root.render(<App />);
 </script>
 </body>
 </html>
+
 
 
 
