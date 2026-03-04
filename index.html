@@ -885,55 +885,5 @@ className={`w-full flex items-center justify-between p-4 rounded-2xl border-2 te
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 </script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>
 </body>
-<script>
-  function sendHeight() {
-    // We target the root container specifically
-    const root = document.getElementById('root');
-    if (root) {
-      // Get the exact height of the content
-      const height = root.getBoundingClientRect().height;
-      // Send a very specific message
-      window.parent.postMessage({ 
-        type: 'setHeight', 
-        value: height 
-      }, '*');
-    }
-  }
-
-  // Optimized listeners
-  window.addEventListener('load', sendHeight);
-  // Use a ResizeObserver - this is the "modern" way to handle height changes
-  const resizeObserver = new ResizeObserver(entries => {
-    sendHeight();
-  });
-  
-  if (document.getElementById('root')) {
-    resizeObserver.observe(document.getElementById('root'));
-  }
-
-  // Fallback for tab clicks
-  window.addEventListener('click', () => setTimeout(sendHeight, 50));
-</script>
 </html>
-
-<script>
-    function sendHeight() {
-        const height = document.documentElement.scrollHeight;
-        window.parent.postMessage({ 'setHeight': height }, '*');
-    }
-
-    // Check height on load
-    window.onload = sendHeight;
-    // Check height whenever the window is resized
-    window.onresize = sendHeight;
-    // Check height whenever the user clicks (tabs changing, accordion opening)
-    window.onclick = sendHeight;
-
-    // Optional: Continuous check every second just in case
-    setInterval(sendHeight, 1000);
-</script>
-
-
-
