@@ -183,6 +183,12 @@
                 localStorage.setItem('inventory', JSON.stringify(inventory));
                 localStorage.setItem('savedServices', JSON.stringify(savedServices));
             }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
+
+           // --- SPECIFIC NAVIGATION HELPER ---
+const handleForwardNav = (target) => {
+    setActiveTab(target);
+    window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
+};
 // -----------------------------------
         // ---------------------------
             const totalBills = monthlyBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
@@ -240,6 +246,8 @@
                 setService(DEFAULT_SERVICE);
             };
 
+
+           
             const NavItem = ({ id, label, icon }) => (
                 <button 
                     onClick={() => setActiveTab(id)}
@@ -257,7 +265,7 @@ const NextButton = ({ target, label = "Continue" }) => (
         <button 
             onClick={() => {
                 // Change the tab
-                setActiveTab(target);
+                handleForwardNav(target);
                 // Send the scroll message ONLY when this button is clicked
                 window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
             }} 
@@ -273,7 +281,7 @@ const NextButton = ({ target, label = "Continue" }) => (
                     <Modal 
                         isOpen={isSavedModalOpen} 
                         onClose={() => setIsSavedModalOpen(false)} 
-                        onGoToMenu={() => { setIsSavedModalOpen(false); setActiveTab('menu'); }} 
+                        onGoToMenu={() => { setIsSavedModalOpen(false); handleForwardNav('menu'); }} 
                     />
 
                     <nav className="max-w-5xl mx-auto p-4 flex gap-2 overflow-x-auto no-scrollbar">
@@ -481,7 +489,7 @@ const NextButton = ({ target, label = "Continue" }) => (
                                     <div className="mt-8 pt-4 flex justify-between items-center opacity-40 hover:opacity-100 transition-opacity">
                                         <p className="text-xs font-medium italic">Already finished? View your full results.</p>
                                         <button 
-                                            onClick={() => setActiveTab('menu')}
+                                            onClick={() => handleForwardNav('menu')}
                                             className="text-brand-main font-black uppercase text-xs tracking-widest flex items-center gap-2"
                                         >
                                             Go to Price Menu <Icon name="arrow-right" size={14} />
@@ -603,6 +611,7 @@ const NextButton = ({ target, label = "Continue" }) => (
     </script>
 </body>
 </html>
+
 
 
 
