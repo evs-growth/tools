@@ -127,18 +127,28 @@
             );
         };
 
-        const App = () => {
+       const App = () => {
+            // Helper to load data from browser memory
+            const getSaved = (key, fallback) => {
+                const saved = localStorage.getItem(key);
+                return saved ? JSON.parse(saved) : fallback;
+            };
+
             const [activeTab, setActiveTab] = useState('goal');
-            const [weeklyHours, setWeeklyHours] = useState(30);
-            const [targetProfit, setTargetProfit] = useState(45);
-            const [monthlyBills, setMonthlyBills] = useState([
+            
+            // Persistent States (Saved to memory)
+            const [weeklyHours, setWeeklyHours] = useState(getSaved('weeklyHours', 30));
+            const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 45));
+            const [monthlyBills, setMonthlyBills] = useState(getSaved('monthlyBills', [
                 { id: 1, name: 'Rent / Chair Fee', amount: 600 },
                 { id: 2, name: 'Booksy Subscription', amount: 30 },
                 { id: 3, name: 'Marketing & Insurance', amount: 80 }
-            ]);
-            const [inventory, setInventory] = useState(INITIAL_INVENTORY);
+            ]));
+            const [inventory, setInventory] = useState(getSaved('inventory', INITIAL_INVENTORY));
+            const [savedServices, setSavedServices] = useState(getSaved('savedServices', []));
+
+            // Temporary States (Reset on refresh)
             const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
-            
             const [service, setService] = useState({
                 name: 'Standard Service',
                 duration: 45,
@@ -148,7 +158,6 @@
                     { id: 'd1', amount: 1 }
                 ]
             });
-            const [savedServices, setSavedServices] = useState([]);
 // --- IFRAME RESIZE CODE ---
         useEffect(() => {
             const sendHeight = () => {
@@ -584,4 +593,5 @@ useEffect(() => {
     </script>
 </body>
 </html>
+
 
