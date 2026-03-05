@@ -128,17 +128,27 @@
         };
 
         const App = () => {
+            // Helper to load data from browser memory
+            const getSaved = (key, fallback) => {
+                const saved = localStorage.getItem(key);
+                return saved ? JSON.parse(saved) : fallback;
+            };
+
             const [activeTab, setActiveTab] = useState('goal');
-            const [weeklyHours, setWeeklyHours] = useState(30);
-            const [targetProfit, setTargetProfit] = useState(45);
-            const [monthlyBills, setMonthlyBills] = useState([
+            
+            // Persistent States (Saved to memory)
+            const [weeklyHours, setWeeklyHours] = useState(getSaved('weeklyHours', 30));
+            const [targetProfit, setTargetProfit] = useState(getSaved('targetProfit', 45));
+            const [monthlyBills, setMonthlyBills] = useState(getSaved('monthlyBills', [
                 { id: 1, name: 'Rent / Chair Fee', amount: 600 },
                 { id: 2, name: 'Booksy Subscription', amount: 30 },
                 { id: 3, name: 'Marketing & Insurance', amount: 80 }
-            ]);
-            const [inventory, setInventory] = useState(INITIAL_INVENTORY);
+            ]));
+            const [inventory, setInventory] = useState(getSaved('inventory', INITIAL_INVENTORY));
+            const [savedServices, setSavedServices] = useState(getSaved('savedServices', []));
+
+            // Temporary States (Reset on refresh)
             const [isSavedModalOpen, setIsSavedModalOpen] = useState(false);
-            
             const [service, setService] = useState({
                 name: 'Standard Service',
                 duration: 45,
@@ -164,6 +174,15 @@
             sendHeight();
             return () => observer.disconnect();
         }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
+
+            // --- AUTO-SAVE TO LOCALSTORAGE ---
+            useEffect(() => {
+                localStorage.setItem('weeklyHours', JSON.stringify(weeklyHours));
+                localStorage.setItem('targetProfit', JSON.stringify(targetProfit));
+                localStorage.setItem('monthlyBills', JSON.stringify(monthlyBills));
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                localStorage.setItem('savedServices', JSON.stringify(savedServices));
+            }, [weeklyHours, targetProfit, monthlyBills, inventory, savedServices]);
 
             // --- SCROLL TO TOP ON TAB CHANGE ---
 useEffect(() => {
@@ -584,5 +603,6 @@ useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
