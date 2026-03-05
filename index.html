@@ -164,6 +164,12 @@
             sendHeight();
             return () => observer.disconnect();
         }, [activeTab, weeklyHours, targetProfit, monthlyBills, inventory, service, savedServices]);
+
+            // --- SCROLL TO TOP ON TAB CHANGE ---
+useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}, [activeTab]);
+// -----------------------------------
         // ---------------------------
             const totalBills = monthlyBills.reduce((sum, b) => sum + (Number(b.amount) || 0), 0);
             const monthlyWorkHours = (Number(weeklyHours) || 1) * 4.33;
@@ -578,4 +584,5 @@
     </script>
 </body>
 </html>
+
 
