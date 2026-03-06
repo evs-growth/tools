@@ -319,21 +319,36 @@ const NextButton = ({ target, label = "Continue" }) => (
                                             <button onClick={() => setMonthlyBills([...monthlyBills, {id: Date.now(), name: 'New Bill', amount: 0}])} className="p-2 bg-brand-main text-white rounded-full hover:bg-brand-black transition-colors"><Icon name="plus" size={16} /></button>
                                         </div>
                                         <div className="space-y-3">
-                                            {monthlyBills.map(bill => (
-                                                <div key={bill.id} className="flex gap-2 items-center">
-                                                    <input value={bill.name} onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, name: e.target.value} : b))} className="editable-input flex-1 text-sm" placeholder="Bill Name" />
-                                                    <div className="w-32 relative">
-                                                        <span className="absolute left-3 top-2 text-xs text-slate-400">$</span>
-                                                        <input type="number" value={bill.amount} onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, amount: e.target.value === '' ? '' : Number(e.target.value)} : b))} className="editable-input w-full pl-6 text-sm text-right" />
-                                                    </div>
-                                                    <button 
-                                                        onClick={() => setMonthlyBills(monthlyBills.filter(b => b.id !== bill.id))}
-                                                        className="text-slate-300 hover:text-red-500 p-2 transition-colors shrink-0"
-                                                    >
-                                                        <Icon name="trash-2" size={16} />
-                                                    </button>
-                                                </div>
-                                            ))}
+{monthlyBills.map(bill => (
+    <div key={bill.id} className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
+        {/* Name input - min-w-0 prevents it from pushing other elements out */}
+        <input 
+            value={bill.name} 
+            onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, name: e.target.value} : b))} 
+            className="editable-input flex-1 min-w-[140px] text-sm" 
+            placeholder="Nombre del Gasto" 
+        />
+        
+        {/* Amount container - increased from w-32 to w-40 and added a min-width */}
+        <div className="w-full sm:w-40 min-w-[120px] relative">
+            <span className="absolute left-3 top-2 text-xs text-slate-400">€</span>
+            <input 
+                type="number" 
+                value={bill.amount} 
+                onChange={e => setMonthlyBills(monthlyBills.map(b => b.id === bill.id ? {...b, amount: e.target.value === '' ? '' : Number(e.target.value)} : b))} 
+                className="editable-input w-full pl-7 pr-2 text-sm text-right" 
+            />
+        </div>
+
+        {/* Delete button */}
+        <button 
+            onClick={() => setMonthlyBills(monthlyBills.filter(b => b.id !== bill.id))}
+            className="text-slate-300 hover:text-red-500 p-2 transition-colors shrink-0"
+        >
+            <Icon name="trash-2" size={16} />
+        </button>
+    </div>
+))}
                                         </div>
                                         <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center">
                                             <span className="text-xs font-bold text-slate-400 uppercase">Calculated Base Rate:</span>
@@ -611,6 +626,7 @@ const NextButton = ({ target, label = "Continue" }) => (
     </script>
 </body>
 </html>
+
 
 
 
