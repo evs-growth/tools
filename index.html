@@ -26,10 +26,16 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
         .modal-overlay {
-            background-color: rgba(42, 44, 50, 0.7);
-            backdrop-filter: blur(4px);
-            animation: fadeIn 0.2s ease-out;
-        }
+    position: absolute; /* Changed from fixed to absolute */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 100vh;
+    background-color: rgba(42, 44, 50, 0.7);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.2s ease-out;
+}
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         ::-webkit-scrollbar { width: 6px; }
@@ -98,34 +104,34 @@
             selections: []
         };
 
-        const Modal = ({ isOpen, onClose, onGoToMenu }) => {
-            if (!isOpen) return null;
-            return (
-                <div className="fixed inset-0 z-[100] modal-overlay flex items-center justify-center p-4">
-                    <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-fade-up text-center">
-                        <div className="w-16 h-16 bg-brand-lime rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Icon name="check" size={32} className="text-brand-main" />
-                        </div>
-                        <h3 className="text-2xl font-black text-brand-black uppercase tracking-tight mb-2">Service Saved!</h3>
-                        <p className="text-slate-500 text-sm mb-8">This service has been calculated and added to your Price Menu.</p>
-                        <div className="space-y-3">
-                            <button 
-                                onClick={onClose}
-                                className="w-full bg-brand-black text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-800 transition-colors"
-                            >
-                                Add More Services
-                            </button>
-                            <button 
-                                onClick={onGoToMenu}
-                                className="w-full bg-brand-main text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-brand-black transition-colors"
-                            >
-                                Go See Menu
-                            </button>
-                        </div>
-                    </div>
+       const Modal = ({ isOpen, onClose, onGoToMenu }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[100] modal-overlay flex justify-center items-start p-4 pt-20">
+            <div className="bg-white rounded-[32px] p-8 max-w-sm w-full shadow-2xl animate-fade-up text-center border border-slate-100">
+                <div className="w-16 h-16 bg-brand-lime rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Icon name="check" size={32} className="text-brand-main" />
                 </div>
-            );
-        };
+                <h3 className="text-2xl font-black text-brand-black uppercase tracking-tight mb-2">¡Servicio Guardado!</h3>
+                <p className="text-slate-500 text-sm mb-8">Este servicio ha sido calculado y añadido a tu Lista de precios.</p>
+                <div className="space-y-3">
+                    <button 
+                        onClick={onClose}
+                        className="w-full bg-brand-black text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-slate-800 transition-colors"
+                    >
+                        Añadir Más Servicios
+                    </button>
+                    <button 
+                        onClick={onGoToMenu}
+                        className="w-full bg-brand-main text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest hover:bg-brand-black transition-colors"
+                    >
+                        Ver Lista de precios
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
        const App = () => {
             // Helper to load data from browser memory
@@ -248,10 +254,14 @@ const calculateService = (svc) => {
             };
 
             const saveService = () => {
-                setSavedServices([...savedServices, {...service, id: Date.now(), calculated: currentPrice}]);
-                setIsSavedModalOpen(true);
-                setService(DEFAULT_SERVICE);
-            };
+    setSavedServices([...savedServices, {...service, id: Date.now(), calculated: currentPrice}]);
+    setIsSavedModalOpen(true);
+    
+    // This is crucial now that the modal is at the top!
+    window.parent.postMessage({ 'type': 'iframe-scroll-top' }, "*");
+    
+    setService(DEFAULT_SERVICE);
+};
 
 
            
@@ -639,6 +649,7 @@ const unit = liquidItem ? 'ml' : 'pcs';
     </script>
 </body>
 </html>
+
 
 
 
