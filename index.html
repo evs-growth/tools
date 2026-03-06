@@ -196,29 +196,36 @@ const handleForwardNav = (target) => {
             const billCostPerHour = totalBills / (monthlyWorkHours || 1);
             const totalRequiredPerHour = (Number(targetProfit) || 0) + billCostPerHour;
 
-            const calculateService = (svc) => {
-                let productCost = 0;
-                svc.selections.forEach(sel => {
-                    let item = inventory.liquids.find(i => i.id === sel.id);
-                    if (item) {
-                        productCost += ((Number(sel.amount) || 0) / (Number(item.capacity) || 1)) * (Number(item.price) || 0);
-                    } else {
-                        item = inventory.disposables.find(i => i.id === sel.id);
-                        if (item) {
-                            productCost += ((Number(sel.amount) || 0) / (Number(item.packSize) || 1)) * (Number(item.price) || 0);
-                        }
-                    }
-                });
-                const laborCost = ((Number(svc.duration) || 0) / 60) * totalRequiredPerHour;
-                return { total: laborCost + productCost, labor: laborCost, products: productCost };
-            };
+const calculateService = (svc) => {
+    let productCost = 0;
+    svc.selections.forEach(sel => {
+        // First, check if the item is a Liquid
+        const liquidItem = inventory.liquids.find(i => i.id === sel.id);
+        if (liquidItem) {
+            productCost += (Number(sel.amount) / (Number(liquidItem.capacity) || 1)) * Number(liquidItem.price);
+        } else {
+            // If not a liquid, check if it's a Disposable
+            const disposableItem = inventory.disposables.find(i => i.id === sel.id);
+            if (disposableItem) {
+                productCost += (Number(sel.amount) / (Number(disposableItem.packSize) || 1)) * Number(disposableItem.price);
+            }
+        }
+    });
+    const laborCost = (Number(svc.duration) / 60) * totalRequiredPerHour;
+    return { total: laborCost + productCost, labor: laborCost, products: productCost };
+};
 
             const currentPrice = calculateService(service);
 
-            const handleAddItem = (cat) => {
-                const newItem = { id: Date.now().toString(), name: 'New Item', capacity: 1, price: 0, packSize: 1 };
-                setInventory({ ...inventory, [cat]: [...inventory[cat], newItem] });
-            };
+         const handleAddItem = (cat) => {
+    // We create a unique ID and a specific object based on the category
+    const id = Date.now().toString();
+    const newItem = cat === 'liquids' 
+        ? { id, name: 'New Liquid Product', capacity: 1000, price: 0 } 
+        : { id, name: 'New Disposable Item', packSize: 1, price: 0 };
+
+    setInventory({ ...inventory, [cat]: [...inventory[cat], newItem] });
+};
 
             const handleRemoveItem = (cat, id) => {
                 setInventory({ ...inventory, [cat]: inventory[cat].filter(i => i.id !== id) });
@@ -461,9 +468,15 @@ const NextButton = ({ target, label = "Continue" }) => (
                                                 <p className="text-sm text-slate-400 italic">Select items above to set usage for this specific service.</p>
                                             ) : (
                                                 service.selections.map(sel => {
-                                                    const item = [...inventory.liquids, ...inventory.disposables].find(i => i.id === sel.id);
-                                                    if (!item) return null;
-                                                    const unit = 'capacity' in item ? 'ml' : 'pcs';
+                                                        // Look for the item in both lists to see where it lives
+const liquidItem = inventory.liquids.find(i => i.id === sel.id);
+const disposableItem = inventory.disposables.find(i => i.id === sel.id);
+
+const item = liquidItem || disposableItem;
+if (!item) return null;
+
+// If we found it in the 'liquids' list, use ml. Otherwise, use pcs.
+const unit = liquidItem ? 'ml' : 'pcs';
                                                     return (
                                                         <div key={sel.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                                                             <span className="text-sm font-bold text-brand-black">{item.name}</span>
@@ -626,6 +639,7 @@ const NextButton = ({ target, label = "Continue" }) => (
     </script>
 </body>
 </html>
+
 
 
 
